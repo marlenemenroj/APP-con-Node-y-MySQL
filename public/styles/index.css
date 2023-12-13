@@ -24,3 +24,20 @@ h1 {
     background-color: navy;
     color: white;
 }
+
+.ongoing {
+    color: navy;
+   
+}
+
+.completed{
+    text-decoration: line-through;
+    color: gray;
+   
+}
+
+.inline{
+    display: inline;
+
+}
+

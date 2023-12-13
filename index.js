@@ -1,19 +1,26 @@
-const con = require('./models/taskModel')
-
 const express = require('express');
 const hbs = require('express-handlebars');
 const bodyParser = require("body-parser");
 
 const app = express();
 
-
+const con = require('./models/taskModel')
 app.use(express.static('public'));
 
-// app.engine('hbs', hbs({
-//     layoutsDir: __dirname + '/views/layouts',
-//     defaultLayout: 'main',
-//     extname: '.hbs'
-// }));
+app.engine('hbs', hbs.engine({
+    helpers: {
+        isCompleted: function (status){
+            if (status == "completed"){
+                return true
+            }else{
+                return false
+            }
+        },
+    },
+     layoutsDir: __dirname + '/views/layouts',
+    defaultLayout: 'main',
+    extname: '.hbs'
+ }));
 
 app.set('view engine', 'hbs');
 
@@ -25,16 +32,52 @@ app.use(bodyParser.json())
 
 
 app.get('/', (req, res) => {
-    res.render('index', {
-        items: []
-    });
+    
+    let query = "SELECT * FROM Todo";
+    let items = []
+    con.query(query,(err, result)=> {
+        if (err) throw err;
+        items = result
+        console.log(items)
+        res.render('index',{
+           items:items 
+        })
+    })
 });
 
+app.get('/:status/:id', (req, res) => {
+    console.log(req.params)
+    let query = "UPDATE Todo SET status='" + req.params.status + "' WHERE task_id=" + req.params.id
+    con.query(query, (err, result) => {
+        if (err) throw err;
+        console.log(result)
+        res.redirect('/')
+    })
+
+});
+
+app.get('/:id', (req, res) => {
+    console.log(req.params)
+    let query = "DELETE FROM Todo WHERE task_id=" + req.params.id
+    con.query(query, (err, result) => {
+        if (err) throw err;
+        console.log(result)
+        res.redirect('/')
+    })
+
+});
 
 app.post('/', (req, res) => {
-
     console.log(req.body)
-    res.redirect('/')
+    let query = "INSERT INTO Todo (task, status) VALUES ?";
+    data = [
+    [req.body.task, "ongoing"]
+    ]
+    con.query(query, [data], (err, result)=>{
+        if (err) throw err;
+        console.log(result)
+        res.redirect('/')
+    })
 })
 
 // port where app is served
