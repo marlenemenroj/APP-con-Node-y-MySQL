@@ -27,17 +27,16 @@ h1 {
 
 .ongoing {
     color: navy;
-   
+
 }
 
-.completed{
+.completed {
     text-decoration: line-through;
     color: gray;
-   
+
 }
 
-.inline{
+.inline {
     display: inline;
 
 }
-
